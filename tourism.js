@@ -1,3 +1,93 @@
+//below are functions for creating and resorting the table
+//taken from our previous PenguinStarter lab
+var clearTable = function()
+{
+    d3.selectAll("#tb tbody tr")
+      .remove();
+    
+}
+
+var initHeaders = function(countries) //Adds interactivity 
+{
+    d3.select("#arrivals")
+    .on("click",function()
+    { 
+        countries.sort(function(a,b)
+        {
+            var aArrivals = Number(a.Arrivals);
+            var bArrivals = Number(b.Arrivals);
+            if(aArrivals > bArrivals) {return -1}
+            else if(aArrivals < bArrivals) {return 1}
+            else { return 0;}
+            
+        });
+        
+        clearTable();
+        createTable(countries);
+    });
+    
+    d3.select("#departures")
+    .on("click",function()
+    { 
+        countries.sort(function(a,b)
+        {
+            var aDeparts = a.Departures;
+            var bDeparts = b.Departures;
+            if(aDeparts > bDeparts) {return -1}
+            else if(aDeparts < bDeparts) {return 1}
+            else { return 0;}
+        });
+        clearTable();
+        createTable(countries);
+    });
+    
+    d3.select("#imports")
+    .on("click",function()
+    { 
+        countries.sort(function(a,b)
+        {
+            var aImports = a.ImportPercentage;
+            var bImports = b.ImportPercentage;
+            if(aImports > bImports) {return -1}
+            else if(aImports < bImports) {return 1}
+            else { return 0;}
+        });
+        clearTable();
+        createTable(countries);
+    });
+    
+    d3.select("#expend")
+    .on("click",function()
+    { 
+        countries.sort(function(a,b)
+        {
+            var aExpend = a.Expenditures;
+            var bExpend = b.Expenditures;
+            if(aExpend > bExpend) {return -1}
+            else if(aExpend < bExpend) {return 1}
+            else { return 0;}
+        });
+        clearTable();
+        createTable(countries);
+    });
+    
+    d3.select("#items")
+    .on("click",function()
+    { 
+        countries.sort(function(a,b)
+        {
+            var aItems = a.travelItems;
+            var bItems = b.travelItems;
+            if(aItems > bItems) {return -1}
+            else if(aItems < bItems) {return 1}
+            else { return 0;}
+        });
+        clearTable();
+        createTable(countries);
+    });
+}
+
+//creates the table using all tourism information
 var createTable = function(tourism) {
     
     //Creates a row for each country
@@ -42,7 +132,7 @@ var loadArrivals = function() {
 
     var successFcn = function(arrivals) //If the data is successfully collected
     {
-        console.log("Data Collected:", arrivals);
+        //console.log("Data Collected:", arrivals);
         loadDepartures(arrivals);
     }
 
@@ -61,7 +151,7 @@ var loadDepartures = function(arrivals) {
 
     var successFcn = function(departures) //If the data is successfully collected
     {
-        console.log("Data Collected:", departures);
+        //console.log("Data Collected:", departures);
         
         //outer left join of arrivals with departures
         arrivals.forEach(function(country) {
@@ -69,9 +159,9 @@ var loadDepartures = function(arrivals) {
                 return departCountry.Country === country.Country;
             });
             delete departures.Country;
-            country.Departures = (result[0] !== undefined) ? result[0].Departures : null;
+            country.Departures = Number((result[0] !== undefined) ? result[0].Departures : null);
         });
-        console.log(arrivals);
+        //console.log(arrivals);
         
         
         loadImports(arrivals);
@@ -92,7 +182,7 @@ var loadImports = function(tourism) {
 
     var successFcn = function(imports) //If the data is successfully collected
     {
-        console.log("Data Collected:", imports);
+        //console.log("Data Collected:", imports);
         
         //outer left join of all data with imports
         tourism.forEach(function(country) {
@@ -100,9 +190,9 @@ var loadImports = function(tourism) {
                 return importCountry.Country === country.Country;
             });
             delete imports.Country;
-            country.ImportPercentage = (result[0] !== undefined) ? result[0].ImportPercentage : null;
+            country.ImportPercentage = Number((result[0] !== undefined) ? result[0].ImportPercentage : null);
         });
-        console.log(tourism);
+        //console.log(tourism);
 
         loadExpenditures(tourism);
     }
@@ -122,7 +212,7 @@ var loadExpenditures = function(tourism) {
 
     var successFcn = function(expend) //If the data is successfully collected
     {
-        console.log("Data Collected:", expend);
+        //console.log("Data Collected:", expend);
         
         //outer left join of all data with expenditures
         tourism.forEach(function(country) {
@@ -130,9 +220,9 @@ var loadExpenditures = function(tourism) {
                 return importCountry.Country === country.Country;
             });
             delete expend.Country;
-            country.Expenditures = (result[0] !== undefined) ? result[0].Expenditures : null;
+            country.Expenditures = Number((result[0] !== undefined) ? result[0].Expenditures : null);
         });
-        console.log(tourism);
+        //console.log(tourism);
 
         loadTravelItems(tourism);
     }
@@ -152,7 +242,7 @@ var loadTravelItems = function(tourism) {
 
     var successFcn = function(travelItems) //If the data is successfully collected
     {
-        console.log("Data Collected:", travelItems);
+        //console.log("Data Collected:", travelItems);
         
         //outer left join of all data with travelItems
         tourism.forEach(function(country) {
@@ -160,11 +250,12 @@ var loadTravelItems = function(tourism) {
                 return importCountry.Country === country.Country;
             });
             delete travelItems.Country;
-            country.travelItems = (result[0] !== undefined) ? result[0].travelItems : null;
+            country.travelItems = Number((result[0] !== undefined) ? result[0].travelItems : null);
         });
         console.log(tourism);
 
         createTable(tourism);
+        initHeaders(tourism);
     }
 
     var failureFcn = function(errorMsg) //If there was an error
