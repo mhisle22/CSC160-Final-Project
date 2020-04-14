@@ -7,6 +7,11 @@ var clearTable = function()
     
 }
 
+//Credit: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 var initHeaders = function(countries) //Adds interactivity 
 {
     d3.select("#arrivals")
@@ -71,13 +76,43 @@ var initHeaders = function(countries) //Adds interactivity
         createTable(countries);
     });
     
-    d3.select("#items")
+    d3.select("#pop")
     .on("click",function()
     { 
         countries.sort(function(a,b)
         {
-            var aItems = a.travelItems;
-            var bItems = b.travelItems;
+            var aItems = a.Population;
+            var bItems = b.Population;
+            if(aItems > bItems) {return -1}
+            else if(aItems < bItems) {return 1}
+            else { return 0;}
+        });
+        clearTable();
+        createTable(countries);
+    });
+    
+    d3.select("#immigrant")
+    .on("click",function()
+    { 
+        countries.sort(function(a,b)
+        {
+            var aItems = a.PercentageImmigrantPopulation;
+            var bItems = b.PercentageImmigrantPopulation;
+            if(aItems > bItems) {return -1}
+            else if(aItems < bItems) {return 1}
+            else { return 0;}
+        });
+        clearTable();
+        createTable(countries);
+    });
+    
+    d3.select("#diplom")
+    .on("click",function()
+    { 
+        countries.sort(function(a,b)
+        {
+            var aItems = a.Diplomat;
+            var bItems = b.Diplomat;
             if(aItems > bItems) {return -1}
             else if(aItems < bItems) {return 1}
             else { return 0;}
@@ -104,11 +139,11 @@ var createTable = function(tourism) {
     
     //append arrivals
     rows.append("td")
-        .text(function(country){return country.Arrivals;});
+        .text(function(country){return numberWithCommas(country.Arrivals);});
     
     //append departures
     rows.append("td")
-        .text(function(country){return country.Departures;});
+        .text(function(country){return numberWithCommas(country.Departures);});
     
     //append imports
     rows.append("td")
@@ -116,11 +151,19 @@ var createTable = function(tourism) {
     
     //append expend
     rows.append("td")
-        .text(function(country){return country.Expenditures;});
+        .text(function(country){return numberWithCommas(country.Expenditures);});
     
-    //append items
+    //append population
     rows.append("td")
-        .text(function(country){return country.travelItems;});
+        .text(function(country){return numberWithCommas(country.Population);});
+    
+    //append immigration stats
+    rows.append("td")
+        .text(function(country){return country.PercentageImmigrantPopulation;});
+    
+    //append immigration stats
+    rows.append("td")
+        .text(function(country){return country.Diplomat;});
 }
 
 
@@ -224,7 +267,7 @@ var loadExpenditures = function(tourism) {
         });
         //console.log(tourism);
 
-        loadTravelItems(tourism);
+        loadPopulation(tourism);
     }
 
     var failureFcn = function(errorMsg) //If there was an error
@@ -236,24 +279,76 @@ var loadExpenditures = function(tourism) {
     
 }
 
-var loadTravelItems = function(tourism) {
+var loadPopulation = function(tourism) {
 
-    var promise5 = d3.csv("travel_items.csv"); //Promise to get the data
+    var promise5 = d3.csv("diplomacy_population_data.csv"); //Promise to get the data
 
-    var successFcn = function(travelItems) //If the data is successfully collected
-    {
-        //console.log("Data Collected:", travelItems);
-        
+    var successFcn = function(pop) //If the data is successfully collected
+    {        
         //outer left join of all data with travelItems
         tourism.forEach(function(country) {
-            var result = travelItems.filter(function(importCountry) {
+            var result = pop.filter(function(importCountry) {
                 return importCountry.Country === country.Country;
             });
-            delete travelItems.Country;
-            country.travelItems = Number((result[0] !== undefined) ? result[0].travelItems : null);
+            delete pop.Country;
+            country.Population = Number((result[0] !== undefined) ? result[0].Population : null) * 1000000; //csv file lists data per millions
+        });
+        
+        loadImmigrant(tourism);
+    }
+
+    var failureFcn = function(errorMsg) //If there was an error
+    {
+        console.log("Something went wrong",errorMsg);
+    }
+
+    promise5.then(successFcn,failureFcn);
+    
+}
+
+var loadImmigrant = function(tourism) {
+
+    var promise5 = d3.csv("immigrant_data.csv"); //Promise to get the data
+
+    var successFcn = function(pop) //If the data is successfully collected
+    {        
+        //outer left join of all data with travelItems
+        tourism.forEach(function(country) {
+            var result = pop.filter(function(importCountry) {
+                return importCountry.Country === country.Country;
+            });
+            delete pop.Country;
+            country.PercentageImmigrantPopulation = Number((result[0] !== undefined) ? result[0].PercentageImmigrantPopulation : null);
+        });
+        
+        loadDiplomat(tourism);
+    }
+
+    var failureFcn = function(errorMsg) //If there was an error
+    {
+        console.log("Something went wrong",errorMsg);
+    }
+
+    promise5.then(successFcn,failureFcn);
+    
+}
+
+var loadDiplomat = function(tourism) {
+
+    var promise5 = d3.csv("diplomacy_data.csv"); //Promise to get the data
+
+    var successFcn = function(pop) //If the data is successfully collected
+    {        
+        //outer left join of all data with travelItems
+        tourism.forEach(function(country) {
+            var result = pop.filter(function(importCountry) {
+                return importCountry.Country === country.Country;
+            });
+            delete pop.Country;
+            country.Diplomat = Number((result[0] !== undefined) ? result[0].Diplomat : null);
         });
         console.log(tourism);
-
+        
         createTable(tourism);
         initHeaders(tourism);
     }
