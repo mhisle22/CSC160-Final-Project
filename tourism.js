@@ -164,6 +164,9 @@ var createTable = function(tourism) {
     //append immigration stats
     rows.append("td")
         .text(function(country){return country.Diplomat;});
+    
+    //TODO: calculate worldliness
+    rows.append("td");
 }
 
 
