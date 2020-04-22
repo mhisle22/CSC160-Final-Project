@@ -1,16 +1,14 @@
 var getArrivals = function(country){return country.Arrivals;};
 
-var getDepartures = function(penguin){return d3.mean(penguin.homework.map(function(hw) 
-                                                        { return hw.grade;}));};
-    
-var getIm = function(penguin){return d3.mean(penguin.test.map(function(test) 
-                                                        { return test.grade;}));};
-    
-var getDip = function(penguin){return penguin.final.map(function(final)
-                                                    { return final.grade;});};
+var getDepartures = function(country){return country.Departures};
 
-var getWorld = function(penguin){return penguin.final.map(function(final)
-                                                    { return final.grade;});};
+var getExpenditures = function(country){return country.Expenditures};
+    
+var getIm = function(country){return country.PercentageImmigrantPopulation};
+    
+var getDip = function(country){return country.Diplomat;};
+
+var getWorld = function(country){return country.World};
 
 var clearPlot = function()
 {
@@ -31,7 +29,8 @@ var initButtons = function(tourism)
           .on("click", function()
         {
             clearPlot();
-            createArrivalsScatter(tourism);
+            initGraph(tourism, getArrivals);
+            setTitle("Arrivals per Country");
           
         });
         
@@ -39,7 +38,8 @@ var initButtons = function(tourism)
           .on("click", function()
         {
             clearPlot();
-            createDeparturesScatter(tourism);
+            initGraph(tourism, getDepartures);
+            setTitle("Departures per Country");
            
         });
         
@@ -47,7 +47,8 @@ var initButtons = function(tourism)
           .on("click", function()
         {
             clearPlot();
-            createExpendScatter(tourism);
+            initGraph(tourism, getExpenditures);
+            setTitle("Expenditures per Country");
      
         });
         
@@ -55,7 +56,8 @@ var initButtons = function(tourism)
           .on("click", function()
         {
             clearPlot();
-            createImScatter(tourism);
+            initGraph(tourism, getIm);
+            setTitle("Immigrant Population per Country");
        
         });
         
@@ -63,7 +65,8 @@ var initButtons = function(tourism)
           .on("click", function()
         {
             clearPlot();
-            createDiplomScatter(tourism);
+            initGraph(tourism, getDip);
+            setTitle("Diplomatic Missions per Country");
        
         });
         
@@ -71,7 +74,8 @@ var initButtons = function(tourism)
           .on("click", function()
         {
             clearPlot();
-            createWorldScatter(tourism);
+            initGraph(tourism, getWorld);
+            setTitle("Calculated Worldliness per Country");
        
         });
         
@@ -95,9 +99,9 @@ var createAxes = function(screen, margins, graph, xScale, yScale)
     
 }
 
-var initGraph = function(tourism) {
+var initGraph = function(tourism, accessor) {
     //the size of the screen
-    var screen = {width:800, height:550};
+    var screen = {width:1000, height:550};
     
     //how much space will be on each side of the graph
     var margins = {top:15,bottom:40,left:70,right:40};
@@ -130,22 +134,22 @@ var initGraph = function(tourism) {
                 .range([0,graph.width]);
     
     var yScale = d3.scaleLinear()
-                .domain([d3.min(tourism,getArrivals),
-                          d3.max(tourism,getArrivals)
+                .domain([d3.min(tourism,accessor),
+                          d3.max(tourism,accessor)
                         ])
                 .range([graph.height,margins.top]);
     
     createAxes(screen, margins, graph, xScale, yScale);
-    createArrivalsScatter(tourism,graph,xScale, yScale);
+    createScatter(tourism,graph,xScale, yScale, accessor);
 }
 
-var createArrivalsScatter = function(tourism,graph,xScale,yScale) {
+var createScatter = function(tourism,graph,xScale,yScale, accessor) {
       
     //sort it first
     tourism.sort(function(a,b)
         {
-            var aArrivals = Number(a.Arrivals);
-            var bArrivals = Number(b.Arrivals);
+            var aArrivals = Number(accessor(a));
+            var bArrivals = Number(accessor(b));
             
             if(aArrivals == null && bArrivals != null) {return 1;}
             if(aArrivals != null && bArrivals == null) {return -1;}
@@ -171,15 +175,13 @@ var createArrivalsScatter = function(tourism,graph,xScale,yScale) {
         })
         .attr("cy",function(country)
         {
-            return yScale(getArrivals(country));
+            return yScale(accessor(country));
         })
         .attr("r",4)
         .attr("fill", "white");
-
-    
-    setTitle("Arrivals per Country");
     
 }
+
 
 //functions to load then concatenate all data from the 5 csv files
 //this will create a table with five columns: arrivals, departures, totalImports, expenditures, and travelItems
@@ -333,8 +335,100 @@ var loadDiplomat = function(tourism) {
         });
         console.log(tourism);
         
+        
+        //calculate wordliness here since we cant do it in the same order as last time
+        //calculate worldliness, then append
+    //so, how we're gonna do this is by scaling everything to a percentage
+    //then average from there
+    //if something is 0, don't include it MIGHT CHANGE LATER
+    var arrivals = tourism.map(function(country){return Number(country.Arrivals);});
+    arrivals = arrivals.filter(n => n);
+    
+    var min = d3.min(arrivals);
+    var max = d3.max(arrivals);
+    
+    var arrivalScale = d3.scaleLinear()
+      .domain([min, max])
+      .range([0, 1]);
+    
+    //this is not the correct name, but i dont want to rewrite this every time
+    //Get over it.
+    arrivals = tourism.map(function(country){return Number(country.Departures);});
+    arrivals = arrivals.filter(n => n); //translation: make this get rid off unset indices
+    
+    var min = d3.min(arrivals);
+    var max = d3.max(arrivals);
+    
+    var departureScale = d3.scaleLinear()
+      .domain([min, max])
+      .range([0, 1]);
+    
+    arrivals = tourism.map(function(country){return Number(country.Expenditures);});
+    arrivals = arrivals.filter(n => n);
+    
+    var min = d3.min(arrivals);
+    var max = d3.max(arrivals);
+    
+    var expendScale = d3.scaleLinear()
+      .domain([min, max])
+      .range([0, 1]);
+    
+    /*arrivals = tourism.map(function(country){return Number(country.Population);});
+    arrivals = arrivals.filter(n => n);
+    
+    var min = d3.min(arrivals);
+    var max = d3.max(arrivals);
+    
+    var popScale = d3.scaleLinear()
+      .domain([min, max])
+      .range([0, 1]);*/
+    
+    
+    arrivals = tourism.map(function(country){return Number(country.PercentageImmigrantPopulation);});
+    arrivals = arrivals.filter(n => n);
+    
+    var min = d3.min(arrivals);
+    var max = d3.max(arrivals);
+    
+    var imScale = d3.scaleLinear()
+      .domain([min, max])
+      .range([0, 1]);
+    
+    arrivals = tourism.map(function(country){return Number(country.Diplomat);});
+    arrivals = arrivals.filter(n => n);
+    
+    var min = d3.min(arrivals);
+    var max = d3.max(arrivals);
+    
+    var dipScale = d3.scaleLinear()
+      .domain([min, max])
+      .range([0, 1]);
+    
+    //now, we can finally append the calculated field by scaling each variable
+    tourism.map(function(country)
+        {
+            var count = 0;
+            var total = 0.0;
+            if(country.Diplomat !== 0){total += dipScale(country.Diplomat); count++;}
+            if(country.Arrivals !== 0){total += arrivalScale(country.Arrivals); count++;}
+            if(country.Expenditures !== 0){total += expendScale(country.Expenditures); count++;}
+            if(country.PercentageImmigrantPopulation !== 0){total += imScale(country.PercentageImmigrantPopulation); count++;}
+            //if(country.Population !== 0){total += popScale(country.Population); count++;}
+            if(country.Departures !== 0){total += departureScale(country.Departures); count++;}
+        
+            //check if this country had no data, which shouldnt ever be true. But it feels good to check...
+            if(count === 0) {return 'N\A';}
+            
+            //add the variable so we can retrieve it later for sorting
+            country.World = total / count;
+        
+            //now let's finally calculate this bad boy
+            return (total / count).toFixed(2);
+    
+        });
+        
         initButtons(tourism);
-        initGraph(tourism);
+        initGraph(tourism, getArrivals);
     }
 
     var failureFcn = function(errorMsg) //If there was an error
