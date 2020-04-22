@@ -1,0 +1,114 @@
+<html>
+    <head>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    
+    <style>
+
+body {
+  background: url(pngguru.com.png);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-color: #0B0C10;
+  background-size: cover;
+  color: #C5C6C7;
+  font-family: Verdana,sans-serif;
+}
+
+a, p, label {
+	color: #C5C6C7;
+}
+
+a:hover{
+	color:#f6b93b;
+}
+
+@keyframes slideIn {
+    0% {
+    transform: translateX(-100px);
+    opacity: 0;
+    }
+    100% {
+    transform: translateX(0);
+    opacity: 1;
+    }
+}
+
+h1 {
+    font-size: 3.5vw;	
+}
+
+label {
+    text-size: 5em;
+}
+
+h3 {
+    color: cyan;
+}
+
+img {
+    width: 125px;
+    height: 125px;
+}
+
+table {
+    border-style: solid;
+    border-width: 3px;
+    border-color: #f6b93b;
+    
+    position: relative;
+    opacity: 0;
+    animation: slideIn 1s forwards;
+    animation-delay: 1s;
+}
+
+th {
+    border: 3px solid #f6b93b;
+    color: cyan;
+    cursor: pointer;
+}
+
+td {
+    border: 3px solid #f6b93b;
+}
+
+
+input {
+    font-family: Verdana,sans-serif;
+    display: block;
+    margin: 10px;	
+}
+
+        
+    </style>
+    
+    
+    </head>
+    <title>The Most Worldly Countries</title>
+    <body>
+        
+    <h1>The Most Worldly Countries</h1>
+        
+    <h3>"My cause is to discover new things and travel the world."</h3>
+
+    <div id="scat">
+        <h2></h2>
+        <div id="buts">
+            <button id="one">Arrivals per Country</button>
+            <button id="two">Departures per Country</button>
+            <button id="three">Expenditure per Country</button>
+            <button id="four">Percentage Immigrant per Country</button>
+            <button id="five">Diplomatic Missions per Country</button>
+            <button id="six">Calculated Worldliness per Country</button>
+        </div>
+    </div>
+        
+    
+    </body>
+    
+    <script src="graph.js"></script>
+
+
+
+
+</html> 

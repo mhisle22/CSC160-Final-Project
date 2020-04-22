@@ -192,7 +192,7 @@ var createTable = function(tourism) {
     */
     //append immigration stats
     rows.append("td")
-        .text(function(country){if(country.PercentageImmigrantPopulation == 0){return "N/A";} else{return country.PercentageImmigrantPopulation;}});
+        .text(function(country){if(country.PercentageImmigrantPopulation == 0){return "N/A";} else{return (country.PercentageImmigrantPopulation).toFixed(2);}});
     
     //append immigration stats
     rows.append("td")
@@ -286,7 +286,7 @@ var createTable = function(tourism) {
             country.World = total / count;
         
             //now let's finally calculate this bad boy
-            return total / count;
+            return (total / count).toFixed(2);
     
         });
 }
