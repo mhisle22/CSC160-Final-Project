@@ -220,8 +220,6 @@ var loadDepartures = function(arrivals) {
             delete departures.Country;
             country.Departures = Number((result[0] !== undefined) ? result[0].Departures : null);
         });
-        //console.log(arrivals);
-        
         
         loadExpenditures(arrivals);
     }
