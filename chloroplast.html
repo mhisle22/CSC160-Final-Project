@@ -1,7 +1,10 @@
 <html>
     <head>
+        
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+        
     <style>
 
 body {
@@ -78,6 +81,11 @@ input {
     display: block;
     margin: 10px;	
 }
+        
+g {
+    background-color: white;
+
+}
 
         
     </style>
@@ -85,33 +93,28 @@ input {
     
     </head>
     <title>The Most Worldly Countries</title>
-    
     <body>
         
     <h1>The Most Worldly Countries</h1>
         
     <h3>"My cause is promote the interconnectivety of the world."</h3>
 
-    <table id='tb'>
-        <thead>
-            <th>Country</th>
-            <th id="arrivals">Total Arrivals</th>
-            <th id="departures">Total Departures</th>
-            <th id="expend">Total Expenditures on Travel</th>
-            <th id="immigrant">Percentage of Country who are Immigrants</th>
-            <th id="diplom">Diplomatic Missions</th>
-            <th id="world">Calculated Worldliness</th>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+    <div id="scat">
+        <h2></h2>
+        <div id="buts">
+            <button id="one">Arrivals per Country</button>
+            <button id="two">Departures per Country</button>
+            <button id="three">Expenditure per Country</button>
+            <button id="four">Percentage Immigrant per Country</button>
+            <button id="five">Diplomatic Missions per Country</button>
+            <button id="six">Calculated Worldliness per Country</button>
+        </div>
+    </div>
         
-    
-    
     
     </body>
     
-    <script src="tourism.js"></script>
+    <script src="chloroplast.js"></script>
 
 
 
