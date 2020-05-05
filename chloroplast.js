@@ -227,9 +227,9 @@ var makeMap = function(tourism, accessor, colorAccessor) {
     
     //Map and projection
     var projection = d3.geoMercator()
-      .scale(100)
+      .scale(130)
       .center([0,20])
-      .translate([graph.width / 3, graph.height / 1.65]);
+      .translate([graph.width / 4, graph.height / 1.65]);
     
     var path = d3.geoPath()
         .projection(projection);
