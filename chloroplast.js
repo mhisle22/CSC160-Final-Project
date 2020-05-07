@@ -34,7 +34,7 @@ var catchNa = function(num) {
     else {
         //fixes decimal place IF its a deciaml
         if(Math.round(num) !== num) {
-            return num.toFixed(2);
+            return num.toFixed(2).toString() + '%';
         }
         return num;
     }
@@ -613,10 +613,10 @@ var loadDiplomat = function(tourism) {
             if(count === 0) {return 'N\A';}
             
             //add the variable so we can retrieve it later for sorting
-            country.World = total / count;
+            country.World = total / count * 100;
         
             //now let's finally calculate this bad boy
-            return (total / count).toFixed(2);
+            return (total / count).toFixed(4);
     
         });
         
