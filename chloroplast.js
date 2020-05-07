@@ -10,10 +10,34 @@ var getDip = function(country){return country.Diplomat;};
 
 var getWorld = function(country){return country.World};
 
-var setTitle = function(msg)
+var setTitle = function(msg, color)
 {
     d3.select("#scat h2")
-    .text(msg);
+    .text(msg)
+    .style("color", color);
+}
+
+//Credit: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript 
+//plus an extra if on my end
+var numberWithCommas = function(x) {
+    if(x === 'N/A') {
+        return x;
+    }
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+//fixes a few issues so display make sense
+var catchNa = function(num) {
+    if(Number(num) === 0.0) {
+        return 'N/A';
+    }
+    else {
+        //fixes decimal place IF its a deciaml
+        if(Math.round(num) !== num) {
+            return num.toFixed(2);
+        }
+        return num;
+    }
 }
 
 //arrivals
@@ -117,7 +141,7 @@ var initButtons = function(tourism)
         {
             clearPlot();
             makeMap(tourism, getArrivals, blueAccessor);
-            setTitle("Arrivals per Country");
+            setTitle("Tourist Arrivals per Country", "royalblue");
           
         });
         
@@ -126,7 +150,7 @@ var initButtons = function(tourism)
         {
             clearPlot();
             makeMap(tourism, getDepartures, orangeAccessor);
-            setTitle("Departures per Country");
+            setTitle("Tourist Departures per Country", "orange");
            
         });
         
@@ -135,7 +159,7 @@ var initButtons = function(tourism)
         {
             clearPlot();
             makeMap(tourism, getExpenditures, greenAccessor);
-            setTitle("Expenditures per Country");
+            setTitle("Tourism Expenditures per Country", "green");
      
         });
         
@@ -144,7 +168,7 @@ var initButtons = function(tourism)
         {
             clearPlot();
             makeMap(tourism, getIm, purpleAccessor);
-            setTitle("Immigrant Population per Country");
+            setTitle("Immigrant Population per Country", "purple");
        
         });
         
@@ -153,7 +177,7 @@ var initButtons = function(tourism)
         {
             clearPlot();
             makeMap(tourism, getDip, blackAccessor);
-            setTitle("Diplomatic Missions per Country");
+            setTitle("Diplomatic Missions per Country", "darkgray");
        
         });
         
@@ -162,7 +186,7 @@ var initButtons = function(tourism)
         {
             clearPlot();
             makeMap(tourism, getWorld, redAccessor);
-            setTitle("Calculated Worldliness per Country");
+            setTitle("Calculated Worldliness per Country", "red");
        
         });
         
@@ -276,13 +300,35 @@ var fillMap = function(tourism, colorScale, countryImgs, path, countries) {
         .attr("d", path)
         // set the color of each country
         .attr("fill", function (d) {
-            //console.log(d.total);
-            //d.total = countryImgs.get(d.id) || 0;
-            //console.log(d.total);
             return heatmap(colorerer(d.total));
-        });
+        })
+        .on("mouseover",function(country) {
+            //create and show tooltip for country
+            var xPosition = d3.event.pageX + 20;
+            var yPosition = d3.event.pageY - 120;
+
+            console.log(country);
+
+            d3.select("#tooltip")
+                .style("left", xPosition + "px")
+                .style("top", yPosition + "px");
+
+            d3.select("#tooltip #data-name")
+                .text(numberWithCommas(catchNa(country.total)));
+          
+            d3.select("#tooltip #data-display")
+                .text(country.properties.name);
+
+            d3.select("#tooltip").classed("hidden", false);
+        })
+        .on("mouseout",function(penguin)
+           {
+            //get rid of tooltip
+            d3.select("#tooltip").classed("hidden", true);
+        });;
     
     //legend
+    
     //Append a defs (for definition) element to your SVG
     var defs = svg.append("defs");
 
@@ -298,7 +344,7 @@ var fillMap = function(tourism, colorScale, countryImgs, path, countries) {
         .attr("y2", "100%");
     
  
-    
+    //set color scale
     linearGradient.selectAll("stop")
         .data( heatmap.range().reverse() )
         .enter().append("stop")
@@ -576,7 +622,7 @@ var loadDiplomat = function(tourism) {
         
         initButtons(tourism);
         makeMap(tourism, getArrivals, blueAccessor);
-        setTitle("Arrivals per Country");
+        setTitle("Tourist Arrivals per Country", "royalblue");
     }
 
     var failureFcn = function(errorMsg) //If there was an error

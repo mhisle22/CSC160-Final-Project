@@ -43,15 +43,6 @@ h1 {
 }
 
 
-h3 {
-    color: cyan;
-}
-
-img {
-    width: 125px;
-    height: 125px;
-}
-
 table {
     border-style: solid;
     border-width: 3px;
@@ -84,6 +75,10 @@ svg {
     position: absolute;
     left: 30%;
     overflow: visible;
+    
+    opacity: 0;
+    animation: slideIn 1s forwards;
+    animation-delay: 0.5s;
 }
         
 #buts {
@@ -146,6 +141,9 @@ button {
         
 #six {
     background-color: red;
+    font-style: italic;
+    text-decoration: underline;
+    font-size:15px;
 }
         
 #six:hover {
@@ -156,6 +154,36 @@ button:active {
 	position:relative;
 	top:1px;
 }
+        
+#tooltip {
+    position: absolute;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+#tooltip.hidden {
+    display: none;
+}
+
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    color: black;
+}
+        
+#google_translate_element {
+    margin: 15px;
+}
+        
+
+        
 
         
     </style>
@@ -179,10 +207,25 @@ button:active {
         </div>
     </div>
         
+    <!--    Tooltip stuff    -->
+    <div id="tooltip" class="hidden">
+        <p id="data-name"></p>
+        <p id="data-display"></p>
+    </div>
+    
+    <div id="google_translate_element"></div>
     
     </body>
     
     <script src="chloroplast.js"></script>
+    
+    <!--    Google translate stuff    -->
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+          new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL}, 'google_translate_element');
+        }
+    </script>
 
 
 
